@@ -1,7 +1,9 @@
+import copy
 from pprint import pprint
 from typing import List
 
 from filters import SwearCheck, isPrivate
+from keyboards import start_menu
 from loader import dp, bot
 from aiogram import types
 import keyboards
@@ -21,48 +23,23 @@ async def start(message: types.Message, state: FSMContext):
     print('check')
     # print(message.from_user.id)
     await message.answer(text=f'Привет, {message.from_user.first_name}',
-                         reply_markup=keyboards.create_menu(is_admin_check(message.from_user.username)))
+                         reply_markup=start_menu)
 
 
-@dp.message_handler(isPrivate(), text='Опубликовать объявление')
-async def add_publication(message: types.Message):
-    await message.answer("Перешлите объявление")
-    await PublicationState.text.set()
+@dp.message_handler(content_types=types.ContentType.USER_SHARED)
+async def all_m(message: types.Message):
+    add_manager(message.user_shared.user_id)
+    await message.answer(f'Менеджер был успешно добавлен!')
 
 
-# @dp.message_handler(isPrivate(), text='Добавить менеджера')
-# async def add_manager(message: types.Message):
+# @dp.message_handler(isPrivate(), text='Опубликовать объявление')
+# async def add_publication(message: types.Message):
+#     await message.answer("Перешлите объявление")
+#     await PublicationState.text.set()
 
 
-# @dp.message_handler(content_types=types.ContentTypes.PHOTO)
-# async def handle_photo(message: types.Message):
-#     # Получаем список всех фотографий из альбома
-#     photos = message.photo
-#     # Отправляем каждую фотографию в альбоме в том же чате
-#     for photo in photos:
-#         await bot.forward_message(chat_id=message.chat.id, from_chat_id=message.chat.id, message_id=message.message_id)
-
-
-# @dp.message_handler(content_types=types.ContentTypes.PHOTO, state=PublicationState.text)
-# # @dp.message_handler(MediaGroupFilter, content_types=types.ContentType.ANY)
-# async def check_publication(message: types.Message, state: FSMContext):
-#     print(message.message_id)
-#     messages = await bot.get_message()
-#     # print(album)
-#     # await message.reply_media_group()
-#     await message.forward(message.from_user.id)
-#     print(message.photo[0].file_unique_id)
-#     keyboard = types.InlineKeyboardMarkup() \
-#         .add(types.InlineKeyboardButton('Опубликовать во всех группах', callback_data=f'publish:{message.message_id}')) \
-#         .add(types.InlineKeyboardButton('Отменить', callback_data=f'delete:{message.message_id}'))
-#     await message.answer('Проверьте правильность объявления и нажмите кнопку "Опубликовать"',
-#                          reply_markup=keyboard)
-#
-#     await state.finish()
-#     await state.update_data(message_id=message.message_id)
-
-
-@dp.message_handler(isPrivate(), is_media_group=True, content_types=types.ContentType.ANY, state=PublicationState.text)
+# @dp.message_handler(isPrivate(), is_media_group=True, content_types=types.ContentType.ANY, state=PublicationState.text)
+@dp.message_handler(isPrivate(), is_media_group=True, content_types=types.ContentType.ANY)
 async def check_publication_media_group(message: types.Message, album: List[types.Message], state: FSMContext):
     """This handler will receive a complete album of any type."""
     print('check_publication_media_group')
@@ -79,13 +56,16 @@ async def check_publication_media_group(message: types.Message, album: List[type
 
         try:
             # We can also add a caption to each file by specifying `"caption": "text"`
-            # if n == len(album):
-            #     caption = message.caption
-            media_group.attach({"media": file_id, "type": obj.content_type, "caption": caption, })
+            if n == len(album):
+                caption = message.caption
+            media_group.attach({"media": file_id, "type": obj.content_type, })
         except ValueError:
             return await message.answer("This type of album is not supported by aiogram.")
-    await message.answer_media_group(media_group)
-    # print(t_message)
+
+    media_group_copy = copy.deepcopy(media_group)
+    media_group_copy.media[0]['caption'] = caption
+    await message.answer_media_group(media_group_copy)
+    print(media_group.media[0])
 
     await state.finish()
 
@@ -99,7 +79,8 @@ async def check_publication_media_group(message: types.Message, album: List[type
                             file_type=None)
 
 
-@dp.message_handler(isPrivate(), state=PublicationState.text)
+# @dp.message_handler(isPrivate(), state=PublicationState.text)
+@dp.message_handler(isPrivate())
 async def check_publication_with_text(message: types.Message, state: FSMContext):
     message_id = await message.answer(message.text)
     print('check_publication_with_text')
@@ -114,11 +95,12 @@ async def check_publication_with_text(message: types.Message, state: FSMContext)
     await state.update_data(message_id=message_id.message_id, message_group=None, test_message=message, file_type=None)
 
 
-@dp.message_handler(isPrivate(), content_types=types.ContentTypes.ANY, state=PublicationState.text)
+# @dp.message_handler(isPrivate(), content_types=types.ContentTypes.ANY, state=PublicationState.text)
+@dp.message_handler(isPrivate(), content_types=types.ContentTypes.ANY)
 async def check_publication(message: types.Message, state: FSMContext):
     print('check_publication')
     pprint(dict(message))
-    file_type = None
+    file_type = "photo"
     await message.forward(message.from_user.id)
     keyboard = types.InlineKeyboardMarkup() \
         .add(types.InlineKeyboardButton('Опубликовать во всех группах', callback_data=f'publish:{message.message_id}')) \
@@ -143,15 +125,9 @@ async def publish_publication(callback_data: types.CallbackQuery, state: FSMCont
 
 @dp.callback_query_handler(isPrivate(), text_startswith='delete:')
 async def decline_publish_publication(callback_data: types.CallbackQuery):
-    await callback_data.message.answer('Публикация отменена')
-
+    await callback_data.message.edit_text('Публикация отменена')
+    await callback_data.message.edit_reply_markup(reply_markup=None)
 
 # @dp.callback_query_handler(lambda query: query.data.startswith('contact:'))
 # async def all_c(callback_data: types.CallbackQuery):
 #     print(callback_data.data)
-
-
-@dp.message_handler(content_types=types.ContentType.USER_SHARED)
-async def all_m(message: types.Message):
-    add_manager(message.user_shared.user_id)
-    await message.answer(f'Менеджер был успешно добавлен!')
