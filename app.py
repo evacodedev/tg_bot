@@ -63,4 +63,4 @@ async def on_start_up(dp):
 
 if __name__ == '__main__':
     dp.middleware.setup(AlbumMiddleware())
-    executor.start_polling(dp, on_startup=on_start_up)
+    executor.start_polling(dp, on_startup=on_start_up, skip_updates=True)
