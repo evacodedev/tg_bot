@@ -63,7 +63,7 @@ async def distribution_publications(message_group=None, test_message=None, file_
             # video_file = await bot.download_file_by_id(video_info.file_id)
 
             await bot.send_video(chat_id=group, caption=test_message.caption, video=video_info.file_id, reply_markup=consult_keyboard('video'))
-    elif 'caption' in dict(test_message):
+    elif file_type == 'photo':
         for group in group_list:
             print('heloo')
             # await bot.forward_message(chat_id=group, from_chat_id=chat_id, message_id=message_id)

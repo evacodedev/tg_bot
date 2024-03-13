@@ -70,7 +70,7 @@ async def check_publication_media_group(message: types.Message, album: List[type
     await state.finish()
 
     keyboard = types.InlineKeyboardMarkup() \
-        .add(types.InlineKeyboardButton('Опубликовать во всех группах', callback_data=f'publish:{message.message_id}')) \
+        .add(types.InlineKeyboardButton('Опубликовать✅', callback_data=f'publish:{message.message_id}')) \
         .add(types.InlineKeyboardButton('Отменить', callback_data=f'delete:{message.message_id}'))
     await message.answer('Проверьте правильность объявления и нажмите кнопку "Опубликовать"',
                          reply_markup=keyboard)
@@ -87,7 +87,7 @@ async def check_publication_with_text(message: types.Message, state: FSMContext)
     await state.finish()
 
     keyboard = types.InlineKeyboardMarkup() \
-        .add(types.InlineKeyboardButton('Опубликовать во всех группах', callback_data=f'publish:{message.message_id}')) \
+        .add(types.InlineKeyboardButton('Опубликовать✅', callback_data=f'publish:{message.message_id}')) \
         .add(types.InlineKeyboardButton('Отменить', callback_data=f'delete:{message.message_id}'))
     await message.answer('Проверьте правильность объявления и нажмите кнопку "Опубликовать"',
                          reply_markup=keyboard)
@@ -103,7 +103,7 @@ async def check_publication(message: types.Message, state: FSMContext):
     file_type = "photo"
     await message.forward(message.from_user.id)
     keyboard = types.InlineKeyboardMarkup() \
-        .add(types.InlineKeyboardButton('Опубликовать во всех группах', callback_data=f'publish:{message.message_id}')) \
+        .add(types.InlineKeyboardButton('Опубликовать✅', callback_data=f'publish:{message.message_id}')) \
         .add(types.InlineKeyboardButton('Отменить', callback_data=f'delete:{message.message_id}'))
     await message.answer('Проверьте правильность объявления и нажмите кнопку "Опубликовать"',
                          reply_markup=keyboard)

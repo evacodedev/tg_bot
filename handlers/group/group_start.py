@@ -12,23 +12,22 @@ pressed_buttons = {}
 @dp.callback_query_handler(text_startswith='consult:')
 async def consulting(callback_data: types.CallbackQuery):
     print('consulting', pressed_buttons)
-    await callback_data.answer('Консультант в ближайшее время свяжется с вами!', show_alert=True)
+    await callback_data.answer('Консультант свяжется с вами в ближайшее время!', show_alert=True)
     user_id = callback_data.from_user.id
     post_id = callback_data.message.message_id
     if (user_id, post_id, 'consultation') not in pressed_buttons:
         pressed_buttons[(user_id, post_id, 'consultation')] = True
         # pprint(dict(callback_data.message))
-        if 'caption' in dict(callback_data.message):
-            if 'video' in dict(callback_data.message):
-                await bot.send_video(chat_id=manager_chat_id,
-                                     caption=callback_data.message.caption + '\nНик клиента: @' + callback_data.from_user.username,
-                                     reply_markup=handle_markup, video=callback_data.message.video.file_id)
-                return None
-            elif 'photo' in dict(callback_data.message):
-                await bot.send_photo(chat_id=manager_chat_id,
-                                     caption=callback_data.message.caption + '\nНик клиента: @' + callback_data.from_user.username,
-                                     reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
-                return None
+        if 'video' in dict(callback_data.message):
+            await bot.send_video(chat_id=manager_chat_id,
+                                 caption=callback_data.message.caption + '\nНик клиента: @' + callback_data.from_user.username,
+                                 reply_markup=handle_markup, video=callback_data.message.video.file_id)
+            return None
+        elif 'photo' in dict(callback_data.message):
+            await bot.send_photo(chat_id=manager_chat_id,
+                                 caption=f'{callback_data.message.caption}\nНик клиента: @' + callback_data.from_user.username,
+                                 reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
+            return None
         elif 'consult:media_group' in callback_data.data:
             transition_state = callback_data.data.split('-')
             num_of_media = int(transition_state[-1])
@@ -40,7 +39,7 @@ async def consulting(callback_data: types.CallbackQuery):
             print(answer)
 
         await bot.send_message(chat_id=manager_chat_id,
-                               text=callback_data.message.text + '\nНик клиента: @' + callback_data.from_user.username,
+                               text=f"{callback_data.message.text}\nНик клиента: @" + callback_data.from_user.username,
                                reply_markup=handle_markup)
 
 
