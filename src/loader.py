@@ -6,9 +6,9 @@ import os
 
 load_dotenv()
 TOKEN = os.getenv('BOT_TOKEN')
-CHANEL_ID = os.getenv('CHANEL_ID')
+CHANNEL_ID = os.getenv('CHANNEL_ID')
 CHAT_ID = os.getenv('CHAT_ID')
 
-print(TOKEN, CHAT_ID, CHANEL_ID)
+print(TOKEN, CHAT_ID, CHANNEL_ID)
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())

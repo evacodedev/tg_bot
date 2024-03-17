@@ -5,16 +5,7 @@ from pprint import pprint
 
 from keyboards.inline import consult_keyboard
 from loader import bot
-
-
-def generate_code():
-    random.seed(int(time.time()))
-    return f"{random.randint(0, 9999999):06d}"
-
-
-def chat_registration(id_chat) -> bool:
-    id_list = [i[:-1] for i in open('data/chats.txt', 'r').readlines()]
-    return str(id_chat) in id_list
+from loader import CHANNEL_ID
 
 
 def check_swears(text):
@@ -50,7 +41,7 @@ async def get_message_by_id(chat_id, message_id):
 
 
 async def distribution_publications(message_group=None, test_message=None, file_type=None):
-    group_list = [i[:-1] for i in open('data/chats.txt', 'r').readlines()]
+    group_list = [CHANNEL_ID,]
     if test_message:
         print(test_message)
     if message_group:

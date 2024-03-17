@@ -4,7 +4,7 @@ from aiogram import types
 import aiohttp
 
 from keyboards.inline import handle_markup
-from loader import dp, bot, TOKEN, CHAT_ID, CHANEL_ID
+from loader import dp, bot, TOKEN, CHAT_ID, CHANNEL_ID
 import requests
 
 print(CHAT_ID)
@@ -40,7 +40,7 @@ async def consulting(callback_data: types.CallbackQuery):
             async with aiohttp.ClientSession() as session:
                 params = {
                     'chat_id': CHAT_ID,
-                    'from_chat_id' : CHANEL_ID,
+                    'from_chat_id' : CHANNEL_ID,
                     'message_ids': result_string,
                 }
                 async with session.get(request_url, params=params) as resp:
