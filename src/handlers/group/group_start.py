@@ -4,13 +4,10 @@ from aiogram import types
 import aiohttp
 
 from keyboards.inline import handle_markup
-from loader import dp, bot, token
+from loader import dp, bot, TOKEN, CHAT_ID, CHANEL_ID
 import requests
 
-manager_chat_id = open('data/manager_chat.txt', 'r').read().replace('\n', '')
-chanel_chat_id = open('data/chats.txt', 'r').read().replace('\n', '')
-
-print(manager_chat_id)
+print(CHAT_ID)
 
 pressed_buttons = {}
 
@@ -25,12 +22,12 @@ async def consulting(callback_data: types.CallbackQuery):
         pressed_buttons[(user_id, post_id, 'consultation')] = True
         # pprint(dict(callback_data.message))
         if 'video' in dict(callback_data.message):
-            await bot.send_video(chat_id=manager_chat_id,
+            await bot.send_video(chat_id=CHAT_ID,
                                  caption=callback_data.message.caption + '\nНик клиента: @' + callback_data.from_user.username,
                                  reply_markup=handle_markup, video=callback_data.message.video.file_id)
             return None
         elif 'photo' in dict(callback_data.message):
-            await bot.send_photo(chat_id=manager_chat_id,
+            await bot.send_photo(chat_id=CHAT_ID,
                                  caption=f'{callback_data.message.caption}\nНик клиента: @' + callback_data.from_user.username,
                                  reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
             return None
@@ -44,12 +41,12 @@ async def consulting(callback_data: types.CallbackQuery):
             #
             # answer = await asyncio.g
             answer = requests.get(
-                f'https://api.telegram.org/bot{token}/forwardMessages'
-                f'?chat_id={manager_chat_id}4&from_chat_id=-1002021461967&message_ids={result_string}')
-            print(answer.content, type(result_string), f'https://api.telegram.org/bot{token}/forwardMessages'
-                          f'?chat_id={manager_chat_id}&from_chat_id={chanel_chat_id}&message_ids={result_string}')
+                f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
+                f'?chat_id={CHAT_ID}4&from_chat_id={CHANEL_ID}&message_ids={result_string}')
+            print(answer.content, type(result_string), f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
+                                                       f'?chat_id={CHAT_ID}&from_chat_id={CHANEL_ID}&message_ids={result_string}')
 
-        await bot.send_message(chat_id=manager_chat_id,
+        await bot.send_message(chat_id=CHAT_ID,
                                text=f"{callback_data.message.text}\nНик клиента: @" + callback_data.from_user.username,
                                reply_markup=handle_markup)
 

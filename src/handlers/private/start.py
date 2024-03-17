@@ -4,13 +4,11 @@ from typing import List
 
 from filters import SwearCheck, isPrivate
 from keyboards import start_menu
-from loader import dp, bot
+from loader import dp
 from aiogram import types
-import keyboards
 
-from utils import generate_code, distribution_publications, is_admin_check, add_manager
+from utils import distribution_publications, add_manager
 from aiogram.dispatcher import FSMContext
-from states import PublicationState, EstateState, SwearState
 
 
 # from aiogram.dispatcher.filters import Media

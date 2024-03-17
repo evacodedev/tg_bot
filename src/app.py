@@ -51,6 +51,14 @@ async def update_pressed_buttons():
         await asyncio.sleep(86400)
 
 
+async def update_logs():
+    while True:
+        # Очистка словаря pressed_buttons
+        pressed_buttons.clear()
+        # Ожидание 3 дня (259200 секунд)
+        await asyncio.sleep(86400)
+
+
 async def on_start_up(dp):
     # setup(dp)
     await dp.bot.set_my_commands([
