@@ -1,10 +1,16 @@
+import asyncio
+
 from aiogram import types
+import aiohttp
 
 from keyboards.inline import handle_markup
-from loader import dp, bot
+from loader import dp, bot, token
 import requests
 
-manager_chat_id = -4152517904
+manager_chat_id = open('data/manager_chat.txt', 'r').read().replace('\n', '')
+chanel_chat_id = open('data/chats.txt', 'r').read().replace('\n', '')
+
+print(manager_chat_id)
 
 pressed_buttons = {}
 
@@ -32,11 +38,16 @@ async def consulting(callback_data: types.CallbackQuery):
             transition_state = callback_data.data.split('-')
             num_of_media = int(transition_state[-1])
             album_messages = sorted([callback_data.message.message_id - i for i in range(1, num_of_media + 1)])
-            result_string = "[" + ", ".join(map(str, album_messages)) + "]"
+            result_string = "[" + ",".join(map(str, album_messages)) + "]"
+            # with aiohttp.ClientSession() as client:
+            #     client
+            #
+            # answer = await asyncio.g
             answer = requests.get(
-                f'https://api.telegram.org/botREDACTED_TOKEN/forwardMessages'
-                f'?chat_id=-4152517904&from_chat_id=-1002021461967&message_ids={result_string}')
-            print(answer)
+                f'https://api.telegram.org/bot{token}/forwardMessages'
+                f'?chat_id={manager_chat_id}4&from_chat_id=-1002021461967&message_ids={result_string}')
+            print(answer.content, type(result_string), f'https://api.telegram.org/bot{token}/forwardMessages'
+                          f'?chat_id={manager_chat_id}&from_chat_id={chanel_chat_id}&message_ids={result_string}')
 
         await bot.send_message(chat_id=manager_chat_id,
                                text=f"{callback_data.message.text}\nНик клиента: @" + callback_data.from_user.username,

@@ -131,3 +131,8 @@ async def decline_publish_publication(callback_data: types.CallbackQuery):
 # @dp.callback_query_handler(lambda query: query.data.startswith('contact:'))
 # async def all_c(callback_data: types.CallbackQuery):
 #     print(callback_data.data)
+
+
+@dp.message_handler()
+async def echo_data(m: types.Message):
+    pprint(dict(m))
