@@ -45,17 +45,7 @@ class AlbumMiddleware(BaseMiddleware):
 
 async def update_pressed_buttons():
     while True:
-        # Очистка словаря pressed_buttons
         pressed_buttons.clear()
-        # Ожидание 3 дня (259200 секунд)
-        await asyncio.sleep(86400)
-
-
-async def update_logs():
-    while True:
-        # Очистка словаря pressed_buttons
-        pressed_buttons.clear()
-        # Ожидание 3 дня (259200 секунд)
         await asyncio.sleep(86400)
 
 

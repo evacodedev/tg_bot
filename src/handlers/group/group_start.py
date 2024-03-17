@@ -36,15 +36,16 @@ async def consulting(callback_data: types.CallbackQuery):
             num_of_media = int(transition_state[-1])
             album_messages = sorted([callback_data.message.message_id - i for i in range(1, num_of_media + 1)])
             result_string = "[" + ",".join(map(str, album_messages)) + "]"
-            # with aiohttp.ClientSession() as client:
-            #     client
-            #
-            # answer = await asyncio.g
-            answer = requests.get(
-                f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
-                f'?chat_id={CHAT_ID}4&from_chat_id={CHANEL_ID}&message_ids={result_string}')
-            print(answer.content, type(result_string), f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
-                                                       f'?chat_id={CHAT_ID}&from_chat_id={CHANEL_ID}&message_ids={result_string}')
+            request_url = f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
+            async with aiohttp.ClientSession() as session:
+                params = {
+                    'chat_id': CHAT_ID,
+                    'from_chat_id' : CHANEL_ID,
+                    'message_ids': result_string,
+                }
+                async with session.get(request_url, params=params) as resp:
+                    print(resp.status)
+                    print(await resp.text())
 
         await bot.send_message(chat_id=CHAT_ID,
                                text=f"{callback_data.message.text}\nНик клиента: @" + callback_data.from_user.username,
@@ -66,4 +67,7 @@ async def handle_request(callback_data: types.CallbackQuery):
         await callback_data.message.edit_text(
             text=callback_data.message.text + f'\nОбработано: @{callback_data.from_user.username}')
 
-    await callback_data.message.edit_reply_markup(reply_markup=None)
+    try:
+        await callback_data.message.edit_reply_markup(reply_markup=None)
+    except:
+        pass

@@ -124,11 +124,10 @@ async def publish_publication(callback_data: types.CallbackQuery, state: FSMCont
 @dp.callback_query_handler(isPrivate(), text_startswith='delete:')
 async def decline_publish_publication(callback_data: types.CallbackQuery):
     await callback_data.message.edit_text('Публикация отменена')
-    await callback_data.message.edit_reply_markup(reply_markup=None)
-
-# @dp.callback_query_handler(lambda query: query.data.startswith('contact:'))
-# async def all_c(callback_data: types.CallbackQuery):
-#     print(callback_data.data)
+    try:
+        await callback_data.message.edit_reply_markup(reply_markup=None)
+    except:
+        pass
 
 
 @dp.message_handler()
