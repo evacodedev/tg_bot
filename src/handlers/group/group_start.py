@@ -18,7 +18,7 @@ async def consulting(callback_data: types.CallbackQuery):
     username = callback_data.from_user.username
     print('consulting', username)
     if not username:
-        await callback_data.answer('Извините, пока что мы не можем обработать ваш запрос.'
+        await callback_data.answer('Извините, пока что мы не можем обработать ваш запрос. '
                                    'Обратитесь напрямую к менеджерам.', show_alert=True)
         return
     await callback_data.answer('Консультант свяжется с вами в ближайшее время!', show_alert=True)
