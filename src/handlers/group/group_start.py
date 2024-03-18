@@ -1,4 +1,5 @@
 import asyncio
+from pprint import pprint
 
 from aiogram import types
 import aiohttp
@@ -14,7 +15,12 @@ pressed_buttons = {}
 
 @dp.callback_query_handler(text_startswith='consult:')
 async def consulting(callback_data: types.CallbackQuery):
-    print('consulting', pressed_buttons)
+    username = callback_data.from_user.username
+    print('consulting', username)
+    if not username:
+        await callback_data.answer('Извините, пока что мы не можем обработать ваш запрос.'
+                                   'Обратитесь напрямую к менеджерам.', show_alert=True)
+        return
     await callback_data.answer('Консультант свяжется с вами в ближайшее время!', show_alert=True)
     user_id = callback_data.from_user.id
     post_id = callback_data.message.message_id
@@ -23,12 +29,12 @@ async def consulting(callback_data: types.CallbackQuery):
         # pprint(dict(callback_data.message))
         if 'video' in dict(callback_data.message):
             await bot.send_video(chat_id=CHAT_ID,
-                                 caption=callback_data.message.caption + '\nНик клиента: @' + callback_data.from_user.username,
+                                 caption= f'{callback_data.message.caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, video=callback_data.message.video.file_id)
             return None
         elif 'photo' in dict(callback_data.message):
             await bot.send_photo(chat_id=CHAT_ID,
-                                 caption=f'{callback_data.message.caption}\nНик клиента: @' + callback_data.from_user.username,
+                                 caption=f'{callback_data.message.caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
             return None
         elif 'consult:media_group' in callback_data.data:
@@ -48,7 +54,7 @@ async def consulting(callback_data: types.CallbackQuery):
                     print(await resp.text())
 
         await bot.send_message(chat_id=CHAT_ID,
-                               text=f"{callback_data.message.text}\nНик клиента: @" + callback_data.from_user.username,
+                               text=f"{callback_data.message.text}\nНик клиента: @{username}",
                                reply_markup=handle_markup)
 
 
