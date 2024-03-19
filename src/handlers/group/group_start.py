@@ -61,17 +61,22 @@ async def consulting(callback_data: types.CallbackQuery):
 @dp.callback_query_handler(text_startswith='handle')
 async def handle_request(callback_data: types.CallbackQuery):
     # pprint(dict(callback_data))
-    print(handle_request)
+    print(callback_data.from_user.username)
     if 'caption' in dict(callback_data.message):
-        if 'video' in dict(callback_data.message):
+        if 'Обработано: @' in callback_data.message.caption:
+            pass
+        elif 'video' in dict(callback_data.message):
             await callback_data.message.edit_caption(
                 caption=callback_data.message.caption + f'\nОбработано: @{callback_data.from_user.username}')
         elif 'photo' in dict(callback_data.message):
             await callback_data.message.edit_caption(
                 caption=callback_data.message.caption + f'\nОбработано: @{callback_data.from_user.username}')
     elif 'text' in dict(callback_data.message):
-        await callback_data.message.edit_text(
-            text=callback_data.message.text + f'\nОбработано: @{callback_data.from_user.username}')
+        if 'Обработано: @' in callback_data.message.text:
+            pass
+        else:
+            await callback_data.message.edit_text(
+                text=callback_data.message.text + f'\nОбработано: @{callback_data.from_user.username}')
 
     try:
         await callback_data.message.edit_reply_markup(reply_markup=None)
