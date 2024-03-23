@@ -23,7 +23,6 @@ class SwearCheck(BoundFilter):
 
 class isPrivate(BoundFilter):
     async def check(self, message, *args) -> bool:
-        print(message)
         if isinstance(message, types.CallbackQuery):
             message = message.message
         return message.chat.type in (

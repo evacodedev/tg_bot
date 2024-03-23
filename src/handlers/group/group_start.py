@@ -1,5 +1,6 @@
 import asyncio
 from pprint import pprint
+from datetime import datetime
 
 from aiogram import types
 import aiohttp
@@ -16,7 +17,7 @@ pressed_buttons = {}
 @dp.callback_query_handler(text_startswith='consult:')
 async def consulting(callback_data: types.CallbackQuery):
     username = callback_data.from_user.username
-    print('consulting', username)
+    print(f'log: consulting {datetime.now()}', username)
     if not username:
         await callback_data.answer('Извините, пока что мы не можем обработать ваш запрос. '
                                    'Обратитесь напрямую к менеджерам.', show_alert=True)
@@ -28,13 +29,15 @@ async def consulting(callback_data: types.CallbackQuery):
         pressed_buttons[(user_id, post_id, 'consultation')] = True
         # pprint(dict(callback_data.message))
         if 'video' in dict(callback_data.message):
+            caption = callback_data.message.caption[:800]
             await bot.send_video(chat_id=CHAT_ID,
-                                 caption= f'{callback_data.message.caption}\nНик клиента: @{username}',
+                                 caption= f'{caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, video=callback_data.message.video.file_id)
             return None
         elif 'photo' in dict(callback_data.message):
+            caption = callback_data.message.caption[:800]
             await bot.send_photo(chat_id=CHAT_ID,
-                                 caption=f'{callback_data.message.caption}\nНик клиента: @{username}',
+                                 caption=f'{caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
             return None
         elif 'consult:media_group' in callback_data.data:
@@ -61,7 +64,7 @@ async def consulting(callback_data: types.CallbackQuery):
 @dp.callback_query_handler(text_startswith='handle')
 async def handle_request(callback_data: types.CallbackQuery):
     # pprint(dict(callback_data))
-    print(callback_data.from_user.username)
+    print(f'log: handle_request {datetime.now()}', callback_data.from_user.username)
     if 'caption' in dict(callback_data.message):
         if 'Обработано: @' in callback_data.message.caption:
             pass

@@ -3,6 +3,7 @@ from pprint import pprint
 from typing import List
 
 from filters import SwearCheck, isPrivate
+from datetime import datetime
 from keyboards import start_menu
 from loader import dp
 from aiogram import types
@@ -18,7 +19,7 @@ from aiogram.dispatcher import FSMContext
 
 @dp.message_handler(isPrivate(), commands='start')
 async def start(message: types.Message, state: FSMContext):
-    print('check')
+    print(f'log: check {datetime.now()}')
     # print(message.from_user.id)
     await message.answer(text=f'Привет, {message.from_user.first_name}',
                          reply_markup=start_menu)
@@ -26,6 +27,7 @@ async def start(message: types.Message, state: FSMContext):
 
 @dp.message_handler(content_types=types.ContentType.USER_SHARED)
 async def all_m(message: types.Message):
+    print(f'log: all_m {datetime.now()}')
     add_manager(message.user_shared.user_id)
     await message.answer(f'Менеджер был успешно добавлен!')
 
@@ -40,7 +42,7 @@ async def all_m(message: types.Message):
 @dp.message_handler(isPrivate(), is_media_group=True, content_types=types.ContentType.ANY)
 async def check_publication_media_group(message: types.Message, album: List[types.Message], state: FSMContext):
     """This handler will receive a complete album of any type."""
-    print('check_publication_media_group')
+    print(f'log: check_publication_media_group {datetime.now()}')
     pprint(dict(message))
     media_group = types.MediaGroup()
     n = 0
@@ -81,7 +83,7 @@ async def check_publication_media_group(message: types.Message, album: List[type
 @dp.message_handler(isPrivate())
 async def check_publication_with_text(message: types.Message, state: FSMContext):
     message_id = await message.answer(message.text)
-    print('check_publication_with_text')
+    print(f'log: check_publication_with_text {datetime.now()}')
     await state.finish()
 
     keyboard = types.InlineKeyboardMarkup() \
@@ -96,8 +98,8 @@ async def check_publication_with_text(message: types.Message, state: FSMContext)
 # @dp.message_handler(isPrivate(), content_types=types.ContentTypes.ANY, state=PublicationState.text)
 @dp.message_handler(isPrivate(), content_types=types.ContentTypes.ANY)
 async def check_publication(message: types.Message, state: FSMContext):
-    print('check_publication')
-    pprint(dict(message))
+    print(f'log: check_publication_photo {datetime.now()}')
+    # pprint(dict(message))
     file_type = "photo"
     await message.forward(message.from_user.id)
     keyboard = types.InlineKeyboardMarkup() \
@@ -114,6 +116,7 @@ async def check_publication(message: types.Message, state: FSMContext):
 
 @dp.callback_query_handler(isPrivate(), text_startswith='publish:')
 async def publish_publication(callback_data: types.CallbackQuery, state: FSMContext):
+    print(f'log: publish_publication {datetime.now()}')
     messages = await state.get_data()
     if await distribution_publications(message_group=messages['message_group'], test_message=messages['test_message'],
                                        file_type=messages['file_type']):
@@ -123,6 +126,7 @@ async def publish_publication(callback_data: types.CallbackQuery, state: FSMCont
 
 @dp.callback_query_handler(isPrivate(), text_startswith='delete:')
 async def decline_publish_publication(callback_data: types.CallbackQuery):
+    print(f'log: decline_publish_publication {datetime.now()}')
     await callback_data.message.edit_text('Публикация отменена')
     try:
         await callback_data.message.edit_reply_markup(reply_markup=None)
