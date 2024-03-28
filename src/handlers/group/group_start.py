@@ -17,6 +17,7 @@ pressed_buttons = {}
 @dp.callback_query_handler(text_startswith='consult:')
 async def consulting(callback_data: types.CallbackQuery):
     username = callback_data.from_user.username
+    caption = ''
     print(f'log: consulting {datetime.now()}', username)
     if not username:
         await callback_data.answer('Извините, пока что мы не можем обработать ваш запрос. '
@@ -27,15 +28,16 @@ async def consulting(callback_data: types.CallbackQuery):
     post_id = callback_data.message.message_id
     if (user_id, post_id, 'consultation') not in pressed_buttons:
         pressed_buttons[(user_id, post_id, 'consultation')] = True
-        # pprint(dict(callback_data.message))
         if 'video' in dict(callback_data.message):
-            caption = callback_data.message.caption[:800]
+            if callback_data.message.caption:
+                caption = callback_data.message.caption[:800]
             await bot.send_video(chat_id=CHAT_ID,
                                  caption= f'{caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, video=callback_data.message.video.file_id)
             return None
         elif 'photo' in dict(callback_data.message):
-            caption = callback_data.message.caption[:800]
+            if callback_data.message.caption:
+                caption = callback_data.message.caption[:800]
             await bot.send_photo(chat_id=CHAT_ID,
                                  caption=f'{caption}\nНик клиента: @{username}',
                                  reply_markup=handle_markup, photo=callback_data.message.photo[0].file_id)
@@ -66,6 +68,7 @@ async def handle_request(callback_data: types.CallbackQuery):
     # pprint(dict(callback_data))
     print(f'log: handle_request {datetime.now()}', callback_data.from_user.username)
     if 'caption' in dict(callback_data.message):
+        print(len(callback_data.message.caption))
         if 'Обработано: @' in callback_data.message.caption:
             pass
         elif 'video' in dict(callback_data.message):
