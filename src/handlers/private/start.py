@@ -29,7 +29,7 @@ async def start(message: types.Message, state: FSMContext):
 async def all_m(message: types.Message):
     print(f'log: all_m {datetime.now()}')
     add_manager(message.user_shared.user_id)
-    await message.answer(f'Менеджер был успешно добавлен!')
+    await message.answer('Менеджер был успешно добавлен!')
 
 
 # @dp.message_handler(isPrivate(), text='Опубликовать объявление')
