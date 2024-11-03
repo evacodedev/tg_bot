@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def consult_keyboard(data_type=""):
-    text = "✅   Получить со скидкой в 50%   🛍️✅"
+    text = "✅   Связаться с консультантом   🛍️✅"
     print(text)
     consult_button = InlineKeyboardButton(
         text=text, callback_data="consult:" + data_type
