@@ -4,3 +4,4 @@ env
 .DS_Store
 .env
 admins.txt
+.python-version
