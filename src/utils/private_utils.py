@@ -208,15 +208,22 @@ async def distribution_publications(message_group=None, test_message=None, file_
     return True
 
 
+def _read_admin_ids():
+    if not ADMINS_FILE.exists():
+        return []
+    return [line.strip() for line in ADMINS_FILE.read_text(encoding='utf-8').splitlines() if line.strip()]
+
+
 def is_admin_check(user_id):
-    admins_list = [i[:-1] for i in ADMINS_FILE.open('r', encoding='utf-8').readlines()]
-    return str(user_id) in admins_list
+    return str(user_id) in _read_admin_ids()
 
 
 def add_manager(manager_id):
-    with ADMINS_FILE.open('a+', encoding='utf-8') as f:
-        f.seek(0)
-        id_list = [i[:-1] for i in f.readlines()]
-        print(id_list)
-        if not(str(manager_id) in id_list):
+    id_list = _read_admin_ids()
+    print(id_list)
+    if str(manager_id) not in id_list:
+        content = ADMINS_FILE.read_text(encoding='utf-8') if ADMINS_FILE.exists() else ''
+        with ADMINS_FILE.open('a', encoding='utf-8', newline='\n') as f:
+            if content and not content.endswith('\n'):
+                f.write('\n')
             f.write(str(manager_id) + '\n')
