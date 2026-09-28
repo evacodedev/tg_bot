@@ -4,10 +4,9 @@ from pprint import pprint
 from datetime import datetime
 
 from aiogram import types
-import aiohttp
 
 from keyboards.inline import handle_markup, consult_keyboard
-from loader import dp, bot, TOKEN, CHAT_ID, CHANNEL_ID
+from loader import dp, bot, CHAT_ID, CHANNEL_ID
 from utils import get_published_post_type
 import requests
 
@@ -105,16 +104,16 @@ async def consulting(callback_data: types.CallbackQuery):
             num_of_media = int(transition_state[-1])
             album_messages = sorted([callback_data.message.message_id - i for i in range(1, num_of_media + 1)])
             result_string = "[" + ",".join(map(str, album_messages)) + "]"
-            request_url = f'https://api.telegram.org/bot{TOKEN}/forwardMessages'
-            async with aiohttp.ClientSession() as session:
-                params = {
-                    'chat_id': CHAT_ID,
-                    'from_chat_id' : CHANNEL_ID,
-                    'message_ids': result_string,
-                }
-                async with session.get(request_url, params=params) as resp:
-                    print(f"log: consulting resp {resp.status}")
-                    print(f"log: consulting answer resp {await resp.text()}")
+            params = {
+                'chat_id': CHAT_ID,
+                'from_chat_id': CHANNEL_ID,
+                'message_ids': result_string,
+            }
+            try:
+                result = await bot.request('forwardMessages', params)
+                print(f"log: consulting forwardMessages ok {result}")
+            except Exception as e:
+                print(f"log: consulting forwardMessages error {e}")
 
         await bot.send_message(chat_id=CHAT_ID,
                                text=f"{callback_data.message.text}\nНик клиента: @{username}",
