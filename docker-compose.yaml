@@ -7,5 +7,8 @@ services:
       network: host
       dockerfile: Dockerfile
     restart: always
+    # DNS на VPS отдаёт заблокированный адрес api.telegram.org; этот отвечает (с потерями)
+    extra_hosts:
+      - "api.telegram.org:149.154.167.220"
     volumes:
       - .:/app
